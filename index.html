@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker Terminal Sim</title>
+    <style>
+        body {
+            background-color: #000; /* Black background */
+            color: #0f0; /* Green text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font for terminal look */
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars for the body */
+            min-height: 100vh;
+            width: 100vw; /* Make body take full viewport width */
+        }
+
+        #terminal-output {
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            overflow-y: hidden; /* Hide vertical scrollbar */
+            padding: 20px;
+            box-sizing: border-box; /* Include padding in width and height */
+            border: none; /* Remove border for fullscreen */
+            box-shadow: none; /* Remove glow effect for a cleaner fullscreen look */
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+        }
+
+        /* Removed scrollbar styling as scrolling is hidden */
+        /*
+        #terminal-output::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #terminal-output::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        #terminal-output::-webkit-scrollbar-thumb {
+            background: #0f0;
+            border-radius: 5px;
+        }
+
+        #terminal-output::-webkit-scrollbar-thumb:hover {
+            background: #0c0;
+        }
+        */
+    </style>
+</head>
+<body>
+
+    <div id="terminal-output">
+        </div>
+
+    <script>
+        const terminalOutput = document.getElementById('terminal-output');
+
+        // Function to generate a random file or directory name
+        function generateRandomName(length) {
+            const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // Function to generate a random file size (in bytes)
+        function generateRandomSize() {
+            return Math.floor(Math.random() * 1000000); // Up to ~1MB
+        }
+
+        // Function to format bytes into KB, MB, GB
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Function to generate a single line of output
+        function generateOutputLine() {
+            const isDirectory = Math.random() < 0.3; // 30% chance of being a directory
+            const name = generateRandomName(Math.random() * 15 + 5); // Name length 5-20
+            const date = new Date().toLocaleDateString();
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (isDirectory) {
+                return `${date}  ${time}    <DIR>          ${name}\n`;
+            } else {
+                const size = generateRandomSize();
+                return `${date}  ${time}         ${formatBytes(size).padStart(15, ' ')} ${name}\n`;
+            }
+        }
+
+        // Function to continuously add output lines
+        function addOutputLine() {
+            const line = generateOutputLine();
+            terminalOutput.innerText += line; // Append the new line
+
+            // Keep the output scrolled to the bottom
+            // This will still work even without a visible scrollbar
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // Start adding output lines at intervals
+        const interval = 50; // Add a new line every 50 milliseconds
+        setInterval(addOutputLine, interval);
+
+        // Add an initial "Volume in drive C is SYSTEM" line
+        terminalOutput.innerText += ' Volume in drive C is SYSTEM\n';
+        terminalOutput.innerText += ' Volume Serial Number is ' + generateRandomName(4).toUpperCase() + '-' + generateRandomName(4).toUpperCase() + '\n\n';
+        terminalOutput.innerText += ' Directory of C:\\' + generateRandomName(5) + '\\' + generateRandomName(8) + '\n\n';
+
+
+    </script>
+
+</body>
+</html>
